@@ -294,14 +294,31 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_SINGLESEL | LVS_SHAREIMAGELISTS);
 	m_List.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP | LVS_EX_DOUBLEBUFFER);
 
-	auto processes = KernelEventCategory::GetCategory(L"Process");
-	ATLASSERT(processes);
-
+	
 	// init events
+	/*
+	{
+		auto processes = KernelEventCategory::GetCategory(L"Process");
+		ATLASSERT(processes);
+		EventConfigCategory cat;
+		cat.Name = processes->Name;
+		m_EventsConfig.AddCategory(cat);
+	}*/
+	{
+		EventConfigCategory diskIO;
+		auto diskIOCat = KernelEventCategory::GetCategory(L"Disk I/O");
+		ATLASSERT(diskIOCat);
+		diskIO.Name = diskIOCat->Name;
+		m_EventsConfig.AddCategory(diskIO);
+	}
 
-	EventConfigCategory cat;
-	cat.Name = processes->Name;
-	m_EventsConfig.AddCategory(cat);
+	{
+		EventConfigCategory file;
+		auto fileCat = KernelEventCategory::GetCategory(L"File");
+		ATLASSERT(fileCat);
+		file.Name = fileCat->Name;
+		m_EventsConfig.AddCategory(file);
+	}
 
 	// init filters
 
@@ -310,6 +327,13 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	desc.Action = FilterAction::Exclude;
 	desc.Parameters = std::to_wstring(::GetCurrentProcessId());
 	m_FilterConfig.AddFilter(desc);
+
+	FilterDescription unityOnlyFilter;
+	unityOnlyFilter.Name = L"Process Name";
+	unityOnlyFilter.Action = FilterAction::Exclude;
+	unityOnlyFilter.Parameters = L"Unity.exe";
+	unityOnlyFilter.Compare = CompareType::NotEqual;
+	m_FilterConfig.AddFilter(unityOnlyFilter);
 
 	if (s_Images == nullptr) {
 		s_Images.Create(16, 16, ILC_COLOR32, 8, 8);
