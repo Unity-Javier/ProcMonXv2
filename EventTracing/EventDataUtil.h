@@ -28,6 +28,11 @@ public:
 		return nullptr;
 	}
 
+	void Clear()
+	{
+		m_FileObjectToPath.clear();
+	}
+
 private:
 	std::map<std::wstring, std::wstring> m_FileObjectToPath;
 };

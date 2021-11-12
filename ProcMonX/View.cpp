@@ -17,6 +17,7 @@
 #include "SerializerFactory.h"
 #include "FormatHelper.h"
 #include "QuickFindDlg.h"
+#include "EventDataUtil.h"
 
 #include <execution>
 
@@ -96,6 +97,8 @@ CString CView::GetColumnText(HWND, int row, int col) const {
 
 		case 6:
 			return GetEventDetails(item).c_str();
+		case 7:
+			return GetEventPath(item).c_str();
 	}
 
 	return text;
@@ -153,6 +156,25 @@ std::wstring CView::ProcessSpecialEvent(EventData* data) const {
 	return details;
 }
 
+std::wstring CView::GetEventPath(EventData* data) const
+{
+	for (auto& prop : data->GetProperties())
+	{
+		if (prop.Name.substr(0, 10) == L"FileObject")
+		{
+			auto& helper = EventDataUtil::Get();
+			std::wstring fileObjectValue = data->FormatProperty(prop);
+			auto *filePath = helper.GetPathFromFileObject(fileObjectValue);
+			if (filePath != nullptr)
+			{
+				return *filePath;
+			}
+		}
+	}
+
+	return L"";
+}
+
 std::wstring CView::GetEventDetails(EventData* data) const {
 	auto details = ProcessSpecialEvent(data);
 	if (details.empty()) {
@@ -192,6 +214,7 @@ void CView::DoSort(const SortInfo* si) {
 			case 4: return SortHelper::SortStrings(i1->GetProcessName(), i2->GetProcessName(), si->SortAscending);
 			case 5: return SortHelper::SortNumbers(i1->GetThreadId(), i2->GetThreadId(), si->SortAscending);
 			case 6: return SortHelper::SortNumbers(i1->GetEventDescriptor().Opcode, i2->GetEventDescriptor().Opcode, si->SortAscending);
+			case 7: return SortHelper::SortNumbers(GetEventPath(i1.get()), GetEventPath(i2.get()), si->SortAscending);
 		}
 		return false;
 	};
@@ -394,6 +417,7 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	//cm->AddColumn(L"Opcode", LVCFMT_CENTER, 45, ColumnFlags::Numeric);
 	//cm->AddColumn(L"Provider", LVCFMT_CENTER, 180, ColumnFlags::Numeric);
 	cm->AddColumn(L"Details", LVCFMT_LEFT, 700);
+	cm->AddColumn(L"FilePath", LVCFMT_LEFT, 700);
 
 	cm->UpdateColumns();
 
@@ -444,6 +468,8 @@ LRESULT CView::OnClear(WORD, WORD, HWND, BOOL&) {
 	m_Events.clear();
 	m_TempEvents.clear();
 	m_OrgEvents.clear();
+	auto &helper = EventDataUtil::Get();
+	helper.Clear();
 	return 0;
 }
 

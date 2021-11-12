@@ -72,6 +72,7 @@ public:
 private:
 	std::wstring ProcessSpecialEvent(EventData* data) const;
 	std::wstring GetEventDetails(EventData* data) const;
+	std::wstring GetEventPath(EventData* data) const;
 	void UpdateEventStatus();
 	void UpdateUI();
 	void ApplyFilters(const FilterConfiguration& config);

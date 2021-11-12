@@ -117,6 +117,9 @@ protected:
 		::GetCursorPos(&pt);
 		POINT pt2(pt);
 		auto header = lv.GetHeader();
+		if (header.m_hWnd == 0)
+			return 0;
+
 		header.ScreenToClient(&pt);
 		HDHITTESTINFO hti;
 		hti.pt = pt;
