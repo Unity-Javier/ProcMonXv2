@@ -6,6 +6,7 @@
 #include "ClipboardHelper.h"
 #include "CallStackDlg.h"
 #include "FormatHelper.h"
+#include "EventDataUtil.h"
 
 CEventPropertiesDlg::CEventPropertiesDlg(EventData* data) : m_pData(data) {
 }
@@ -67,6 +68,17 @@ LRESULT CEventPropertiesDlg::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 		if (value.empty())
 			value = m_pData->FormatProperty(prop);
 		InsertItem(prop.Name.c_str(), value.c_str());
+
+		if (prop.Name == L"FileObject")
+		{
+			auto& helper = EventDataUtil::Get();
+			auto *path = helper.GetPathFromFileObject(value);
+			if (path != nullptr)
+			{
+				InsertItem(L"FilePath", path->c_str());
+			}
+		}
+
 	}
 
 	return 0;

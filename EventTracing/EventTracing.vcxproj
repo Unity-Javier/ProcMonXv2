@@ -131,6 +131,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -151,6 +152,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EventData.h" />
+    <ClInclude Include="EventDataUtil.h" />
     <ClInclude Include="FilterBase.h" />
     <ClInclude Include="KernelEvents.h" />
     <ClInclude Include="pch.h" />
@@ -170,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventData.cpp" />
+    <ClCompile Include="EventDataUtil.cpp" />
     <ClCompile Include="FilterBase.cpp" />
     <ClCompile Include="KernelEvents.cpp" />
     <ClCompile Include="pch.cpp">

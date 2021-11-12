@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EventData.h"
+#include "EventDataUtil.h"
 #include <in6addr.h>
 
 // EventProperty
@@ -95,6 +96,10 @@ const std::vector<EventProperty>& EventData::GetProperties() const {
 	auto userDataLength = _record->UserDataLength;
 	auto data = (BYTE*)_record->UserData;
 
+	bool hasPath = false;
+	std::wstring fileObjectValue = L"";
+	std::wstring filePathValue = L"";
+
 	for (ULONG i = 0; i < info->TopLevelPropertyCount && userDataLength > 0; i++) {
 		auto& prop = info->EventPropertyInfoArray[i];
 		EventProperty property(prop);
@@ -116,8 +121,26 @@ const std::vector<EventProperty>& EventData::GetProperties() const {
 				break;
 			userDataLength -= (USHORT)len;
 		}
+
+		if (property.Name == L"FileObject")
+		{
+			fileObjectValue = FormatProperty(property);
+		}
+		else if (property.Name == L"OpenPath")
+		{
+			filePathValue = FormatProperty(property);
+			hasPath = true;
+		}
+
 		_properties.push_back(std::move(property));
 	}
+
+	if (hasPath)
+	{
+		auto& helper = EventDataUtil::Get();
+		helper.AddFileObjectToPath(fileObjectValue, filePathValue);
+	}
+
 	if (_properties.empty()) {
 		_buffer.release();
 	}
