@@ -50,6 +50,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules.cs" />
+    <Compile Include="RulesMatcher.cs" />
     <Compile Include="RulesTrie.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -41,10 +41,13 @@ namespace FileActivityAnalyzer
         static void Main(string[] args)
         {
             ParseArgs(args, out var config);
+            
             var opCodes = new OpCodes(config);
-            var parser = new Parser(config);
+            var parser = new Parser(config, opCodes);
             var loadRules = new Rules(config, opCodes);
             var rulesTrie = new RulesTrie(loadRules);
+
+            var rulesMatcher = new RulesMatcher(parser, rulesTrie);
         }
     }
 }

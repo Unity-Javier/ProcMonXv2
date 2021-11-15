@@ -3,7 +3,6 @@ CreateFile
 CreateFile
 QueryNetworkOpenInformationFile
 CloseFile
-QueryOpen
 CreateFile
 QueryNetworkOpenInformationFile
 CloseFile

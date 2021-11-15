@@ -8,7 +8,8 @@ namespace FileActivityAnalyzer
 {
     public class RulesTrie
     {
-        public Dictionary<int, RulesNode> m_Rules;
+        private Dictionary<int, RulesNode> m_Rules;
+
         public RulesTrie(Rules rules)
         {
             m_Rules = new Dictionary<int, RulesNode>();
@@ -36,6 +37,11 @@ namespace FileActivityAnalyzer
 
                 PopulateTrie(curNode, curRule, 1);
             }
+        }
+
+        public Dictionary<int, RulesNode> GetRules()
+        {
+            return m_Rules;
         }
 
         private void PopulateTrie(RulesNode curNode, Rule rule, int ruleIndex)

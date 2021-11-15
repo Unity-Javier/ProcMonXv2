@@ -11,6 +11,8 @@ namespace FileActivityAnalyzer
 {
     public class Parser
     {
+        private Dictionary<string, List<ProcMonOperationInfo>> m_ProcMonOperationInfos;
+
         public enum ProcMonEntry
         {
             Time_of_Day = 0,
@@ -26,7 +28,7 @@ namespace FileActivityAnalyzer
             Detail = 10
         };
 
-        public Parser(Config config)
+        public Parser(Config config, OpCodes opCodes)
         {
             var allLines = GetAllLines(config);
 
@@ -34,10 +36,15 @@ namespace FileActivityAnalyzer
             var extractedLines = ExtractLineContents(allLines);
 
             //Put lines together
-            GroupLines(extractedLines, config);
+            m_ProcMonOperationInfos = GroupLines(extractedLines, config, opCodes);
         }
 
-        private Dictionary<string, List<ProcMonOperationInfo>> GroupLines(ProcMonLine[] extractedLines, Config config)
+        public Dictionary<string, List<ProcMonOperationInfo>> GetOperationInfos()
+        {
+            return m_ProcMonOperationInfos;
+        }
+
+        private Dictionary<string, List<ProcMonOperationInfo>> GroupLines(ProcMonLine[] extractedLines, Config config, OpCodes opCodes)
         {
             var allCategories = new HashSet<string>();
 
@@ -56,6 +63,7 @@ namespace FileActivityAnalyzer
                 operation.Add(new ProcMonOperationInfo()
                 {
                     operation = curLine.contents[(int)ProcMonEntry.Operation],
+                    opCode = opCodes.GetOpCode(curLine.contents[(int)ProcMonEntry.Operation]),
                     details = new ProcMonOperationDetails()
                     {
                         Time_of_Day = curLine.contents[(int)ProcMonEntry.Time_of_Day],
@@ -150,11 +158,13 @@ namespace FileActivityAnalyzer
         public string[] contents;
     }
 
-    [DebuggerDisplay("Operation = {operation}")]
+    [DebuggerDisplay("Operation = {operation}, OpCode = {opCode}")]
     public class ProcMonOperationInfo
     {
         public string operation;
+        public int opCode;
         public ProcMonOperationDetails details;
+        public Rule matchedRule;
     }
 
     public class ProcMonOperationDetails
