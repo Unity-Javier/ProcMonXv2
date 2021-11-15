@@ -22,6 +22,18 @@ namespace FileActivityAnalyzer
                 {
                     config.RulesFile = args[i + 1];
                 }
+                else if (args[i].ToLower() == "-opcodes")
+                {
+                    config.OpCodesFile = args[i + 1];
+                }
+                else if (args[i].ToLower() == "-generate_opcodes")
+                {
+                    config.GenerateOpCodes = true;
+                }
+                else if (args[i].ToLower() == "-opcodes_output_path")
+                {
+                    config.OpCodesOutputPath = args[i + 1];
+                }
             }
 
         }
@@ -29,8 +41,10 @@ namespace FileActivityAnalyzer
         static void Main(string[] args)
         {
             ParseArgs(args, out var config);
+            var opCodes = new OpCodes(config);
             var parser = new Parser(config);
-            var loadRules = new Rules(config);
+            var loadRules = new Rules(config, opCodes);
+            var rulesTrie = new RulesTrie(loadRules);
         }
     }
 }

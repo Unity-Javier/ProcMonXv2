@@ -9,7 +9,9 @@ namespace FileActivityAnalyzer
     public class Config
     {
         public string PathToCSV;
-
         public string RulesFile;
+        public string OpCodesFile;
+        public bool GenerateOpCodes;
+        public string OpCodesOutputPath;
     }
 }

@@ -9,13 +9,14 @@ namespace FileActivityAnalyzer
 {
     public class Rules
     {
-        public Rules(Config config)
+        private Rule[] m_Rules;
+        public Rules(Config config, OpCodes opCodes)
         {
             var rulesLines = File.ReadAllLines(config.RulesFile);
-            ExtractRules(rulesLines);
+            ExtractRules(rulesLines, opCodes);
         }
 
-        private void ExtractRules(string[] rulesLines)
+        private void ExtractRules(string[] rulesLines, OpCodes opCodes)
         {
             var rules = new List<Rule>();
             var curSteps = new List<string>();
@@ -28,6 +29,8 @@ namespace FileActivityAnalyzer
                     {
                         //Finalize rule
                         curRule.steps = curSteps.ToArray();
+                        curRule.PopulateOpCodes(opCodes);
+                        
                         curSteps.Clear();
                         rules.Add(curRule);
                     }
@@ -47,7 +50,13 @@ namespace FileActivityAnalyzer
                     curSteps.Add(rulesLines[i]);
                 }
             }
-            Console.WriteLine("Done");
+
+            m_Rules = rules.ToArray();
+        }
+
+        public Rule[] GetRules()
+        {
+            return m_Rules;
         }
     }
 
@@ -55,5 +64,18 @@ namespace FileActivityAnalyzer
     {
         public string ruleName;
         public string[] steps;
+        public int[] opCodes;
+
+        internal void PopulateOpCodes(OpCodes codes)
+        {
+            if (steps == null || steps.Length == 0)
+                throw new Exception("Steps have not been initialized yet");
+            opCodes = new int[steps.Length];
+
+            for(int i = 0; i < opCodes.Length; ++i)
+            {
+                opCodes[i] = codes.GetOpCode(steps[i]);
+            }
+        }
     }
 }

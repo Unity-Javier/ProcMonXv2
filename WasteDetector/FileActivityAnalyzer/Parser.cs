@@ -34,11 +34,13 @@ namespace FileActivityAnalyzer
             var extractedLines = ExtractLineContents(allLines);
 
             //Put lines together
-            GroupLines(extractedLines);
+            GroupLines(extractedLines, config);
         }
 
-        private Dictionary<string, List<ProcMonOperationInfo>> GroupLines(ProcMonLine[] extractedLines)
+        private Dictionary<string, List<ProcMonOperationInfo>> GroupLines(ProcMonLine[] extractedLines, Config config)
         {
+            var allCategories = new HashSet<string>();
+
             var fileToInfo = new Dictionary<string, List<ProcMonOperationInfo>>();
             for (int i = 0; i < extractedLines.Length; ++i)
             {
@@ -66,6 +68,28 @@ namespace FileActivityAnalyzer
                         Result = curLine.contents[(int)ProcMonEntry.Result]
                     }
                 });
+
+                if (config.GenerateOpCodes)
+                {
+                    var category = curLine.contents[(int)ProcMonEntry.Operation];
+                    if (!allCategories.Contains(category) && !string.IsNullOrEmpty(category))
+                        allCategories.Add(category);
+                }
+            }
+
+            //For debugging, we should be able to generate new opcodes so we can catch 
+            //all the new operations that came in a new capture
+            if (config.GenerateOpCodes)
+            {
+                StringBuilder categories = new StringBuilder();
+                int counter = 1;
+                foreach (var entry in allCategories)
+                {
+                    categories.Append($"{entry}:{counter}\n");
+                    counter++;
+                }
+
+                File.WriteAllText(config.OpCodesOutputPath, categories.ToString());
             }
 
             return fileToInfo;
