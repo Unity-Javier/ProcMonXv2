@@ -37,7 +37,7 @@ namespace FileActivityAnalyzer
             GroupLines(extractedLines);
         }
 
-        private void GroupLines(ProcMonLine[] extractedLines)
+        private Dictionary<string, List<ProcMonOperationInfo>> GroupLines(ProcMonLine[] extractedLines)
         {
             var fileToInfo = new Dictionary<string, List<ProcMonOperationInfo>>();
             for (int i = 0; i < extractedLines.Length; ++i)
@@ -68,7 +68,7 @@ namespace FileActivityAnalyzer
                 });
             }
 
-            Console.WriteLine("Complete");
+            return fileToInfo;
         }
 
         private ProcMonLine[] ExtractLineContents(string[] allLines)
@@ -77,7 +77,7 @@ namespace FileActivityAnalyzer
 
             Regex matcher = new Regex("(?:,|\n|^)(\"(?:(?: \"\") *[^\"]*)*\" |[^\",\n]*|(?:\n|$))", RegexOptions.Compiled);
 
-            int kMaxSize = 10;
+            int kDetailsIndex = 11;
             for (int i = 0; i < allLines.Length; ++i)
             {
                 var curLine = allLines[i];
@@ -85,7 +85,7 @@ namespace FileActivityAnalyzer
 
                 extractedLines[i] = new ProcMonLine()
                 {
-                    contents = new string[kMaxSize]
+                    contents = new string[kDetailsIndex]
                 };
 
                 int counter = 0;
@@ -93,12 +93,21 @@ namespace FileActivityAnalyzer
                 {
                     var group = match.Groups;
                     var entry = group[1].Value;
-                    
-                    extractedLines[i].contents[counter] = entry;
-                    counter++;
 
-                    if (counter >= kMaxSize)
-                        break;
+                    if (counter == kDetailsIndex)
+                    {
+                        extractedLines[i].contents[kDetailsIndex-1] += entry;
+                    }
+                    else if(counter > kDetailsIndex)
+                    {
+                        extractedLines[i].contents[kDetailsIndex - 1] += $",{entry}";
+                    }
+                    else
+                    {
+                        extractedLines[i].contents[counter] = entry;
+                    }
+
+                    counter++;
                 }
 
             }

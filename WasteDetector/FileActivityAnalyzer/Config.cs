@@ -9,5 +9,7 @@ namespace FileActivityAnalyzer
     public class Config
     {
         public string PathToCSV;
+
+        public string RulesFile;
     }
 }

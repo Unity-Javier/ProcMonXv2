@@ -1,0 +1,12 @@
+=CalculateFileHash Rule=
+CreateFile
+CreateFile
+QueryNetworkOpenInformationFile
+CloseFile
+QueryOpen
+CreateFile
+QueryNetworkOpenInformationFile
+CloseFile
+ReadFile
+CloseFile
+=End=

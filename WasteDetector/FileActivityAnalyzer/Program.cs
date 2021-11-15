@@ -18,6 +18,10 @@ namespace FileActivityAnalyzer
                 {
                     config.PathToCSV = args[i + 1];
                 }
+                else if(args[i].ToLower() == "-rules")
+                {
+                    config.RulesFile = args[i + 1];
+                }
             }
 
         }
@@ -26,6 +30,7 @@ namespace FileActivityAnalyzer
         {
             ParseArgs(args, out var config);
             var parser = new Parser(config);
+            var loadRules = new Rules(config);
         }
     }
 }
