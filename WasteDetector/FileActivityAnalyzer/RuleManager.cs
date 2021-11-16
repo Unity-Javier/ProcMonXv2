@@ -17,9 +17,10 @@ namespace FileActivityAnalyzer
             m_Rules.Add(new FileHasherComponent(opCodes));
             m_Rules.Add(new HasFileChangedComponent(opCodes));
             m_Rules.Add(new CreateFileThenSetAttributesComponent(opCodes));
-            m_Rules.Add(new WriteToFileAndHashOnCloseComponnt(opCodes));
+            m_Rules.Add(new WriteToFileAndHashOnCloseComponent(opCodes));
             m_Rules.Add(new MoveTempFileToLibraryFolderComponent(opCodes));
             m_Rules.Add(new InvalidParameterComponent(opCodes));
+            m_Rules.Add(new TextRegistryDoubleWriteASMDefComponent(opCodes));
 
             SanitizeRules();
         }

@@ -9,7 +9,6 @@ namespace FileActivityAnalyzer.RuleComponents
     public class InvalidParameterComponent : IRuleComponent
     {
         private Rule m_Rule;
-        private bool[] m_CanBeOptimized;
         public InvalidParameterComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
@@ -49,7 +48,7 @@ namespace FileActivityAnalyzer.RuleComponents
 
         public bool CanBeOptimized(int index)
         {
-            return m_CanBeOptimized[index];
+            return true;
         }
 
         public float GetEstimatedRuleOptimizationTime()

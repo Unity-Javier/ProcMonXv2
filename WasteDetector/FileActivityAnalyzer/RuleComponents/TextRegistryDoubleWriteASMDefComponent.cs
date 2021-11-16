@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FileActivityAnalyzer.RuleComponents
 {
-    public class WriteToFileAndHashOnCloseComponnt : IRuleComponent
+    public class TextRegistryDoubleWriteASMDefComponent : IRuleComponent
     {
         private Rule m_Rule;
         private bool[] m_CanBeOptimized;
-        public WriteToFileAndHashOnCloseComponnt(OpCodes opCodes)
+        public TextRegistryDoubleWriteASMDefComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
         }
@@ -22,9 +22,16 @@ namespace FileActivityAnalyzer.RuleComponents
                 ruleName = GetName(),
                 steps = new string[]
                 {
-                    "WriteFile",
-                    "WriteFile",
+                    "CreateFile",
+                    "QueryNetworkOpenInformationFile",
+                    "CloseFile",
+                    "CreateFile",
                     "ReadFile",
+                    "CloseFile",
+                    "CreateFile",
+                    "QueryNetworkOpenInformationFile",
+                    "CloseFile",
+                    "CreateFile",
                     "ReadFile",
                     "CloseFile"
                 }
@@ -32,11 +39,18 @@ namespace FileActivityAnalyzer.RuleComponents
 
             m_CanBeOptimized = new bool[]
             {
-                false,//"WriteFile",
-                false,//"WriteFile",
+                false,//"CreateFile",
+                false,//"QueryNetworkOpenInformationFile",
+                false,//"Close",
+                false,//"CreateFile",
                 false,//"ReadFile",
+                false,//"CloseFile",
+                true,//"CreateFile",
+                true,//"QueryNetworkOpenInformationFile",
+                true,//"CloseFile",
+                true,//"CreateFile",
                 true,//"ReadFile",
-                false//"CloseFile"
+                true//"CloseFile"
             };
 
             m_Rule.opCodes = new int[m_Rule.steps.Length];
@@ -53,7 +67,8 @@ namespace FileActivityAnalyzer.RuleComponents
             {
                 var curInfo = infos[i];
 
-                if (curInfo.matchedRule != null)
+                //Only match ASMDEF files here
+                if (curInfo.matchedRule != null || !curInfo.details.Path.EndsWith(".asmdef", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 Match(infos, i);
@@ -88,7 +103,7 @@ namespace FileActivityAnalyzer.RuleComponents
 
         public string GetName()
         {
-            return "WriteToFileAndHashOnCloseComponnt rule";
+            return "TextRegistryDoubleWriteASMDefComponent rule";
         }
 
         public bool CanBeOptimized(int index)

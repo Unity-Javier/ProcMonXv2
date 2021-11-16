@@ -80,6 +80,7 @@ namespace FileActivityAnalyzer
                         Parent_PID = curLine.contents[(int)ProcMonEntry.Parent_PID],
                         TID = curLine.contents[(int)ProcMonEntry.TID],
                         Category = curLine.contents[(int)ProcMonEntry.Category],
+                        Path = path,
                         Result = curLine.contents[(int)ProcMonEntry.Result]
                     }
                 });
@@ -183,6 +184,7 @@ namespace FileActivityAnalyzer
         public string Parent_PID;
         public string TID;
         public string Category;
+        public string Path;
         public string Result;
         public string Detail;
     }
