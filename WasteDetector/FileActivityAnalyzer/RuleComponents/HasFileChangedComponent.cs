@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FileActivityAnalyzer.RuleComponents
 {
-    public class FileHasherComponent : IRuleComponent
+    public class HasFileChangedComponent : IRuleComponent
     {
         private Rule m_Rule;
-        public FileHasherComponent(OpCodes opCodes)
+        public HasFileChangedComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
         }
@@ -18,17 +18,14 @@ namespace FileActivityAnalyzer.RuleComponents
         {
             m_Rule = new Rule()
             {
-                ruleName = "FileHasher rule",
+                ruleName = "HasFileChangedRule rule",
                 steps = new string[]
                 {
                     "CreateFile",
-                    "CreateFile",
                     "QueryNetworkOpenInformationFile",
                     "CloseFile",
                     "CreateFile",
                     "QueryNetworkOpenInformationFile",
-                    "CloseFile",
-                    "ReadFile",
                     "CloseFile"
                 }
             };
@@ -68,8 +65,8 @@ namespace FileActivityAnalyzer.RuleComponents
                 }
             }
 
-            var end = index + m_Rule.opCodes.Length;
-            for (int i = 0; i < m_Rule.opCodes.Length; ++i)
+            var end = m_Rule.opCodes.Length;
+            for (int i = 0; i < end; ++i)
             {
                 //Match & fill up all the infos so we don't try and match them again
                 infos[index + i].matchedRule = m_Rule;

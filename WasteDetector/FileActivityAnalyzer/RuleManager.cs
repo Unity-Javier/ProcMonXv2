@@ -15,6 +15,7 @@ namespace FileActivityAnalyzer
         {
             m_Rules = new List<IRuleComponent>();
             m_Rules.Add(new FileHasherComponent(opCodes));
+            m_Rules.Add(new HasFileChangedComponent(opCodes));
         }
 
         public List<IRuleComponent> GetRuleComponents()
