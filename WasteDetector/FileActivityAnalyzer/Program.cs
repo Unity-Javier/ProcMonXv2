@@ -18,10 +18,6 @@ namespace FileActivityAnalyzer
                 {
                     config.PathToCSV = args[i + 1];
                 }
-                else if(args[i].ToLower() == "-rules")
-                {
-                    config.RulesFile = args[i + 1];
-                }
                 else if (args[i].ToLower() == "-opcodes")
                 {
                     config.OpCodesFile = args[i + 1];
@@ -44,10 +40,7 @@ namespace FileActivityAnalyzer
             
             var opCodes = new OpCodes(config);
             var parser = new Parser(config, opCodes);
-            var loadRules = new Rules(config, opCodes);
-            //var rulesTrie = new RulesTrie(loadRules);
-            //var rulesMatcher = new RulesMatcher(parser, rulesTrie);
-
+            
             var ruleManager = new RuleManager(opCodes);
             var components = ruleManager.GetRuleComponents();
             var componentBasedRuleMatcher = new RulesMatcher(parser, components);

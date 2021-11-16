@@ -75,30 +75,5 @@ namespace FileActivityAnalyzer.RuleComponents
                 infos[index + i].matchedRule = m_Rule;
             }
         }
-
-        private Rule ContinueMatch(List<ProcMonOperationInfo> infos, int index, RulesNode node)
-        {
-            var curOpCode = infos[index].opCode;
-
-            if (node.m_IsRule)
-            {
-                infos[index].matchedRule = node.m_Rule;
-                return node.m_Rule;
-            }
-            else if (node.m_Siblings.ContainsKey(curOpCode))
-            {
-                node = node.m_Siblings[curOpCode];
-
-                //Recursively assign the matched rule
-                if (index + 1 < infos.Count)
-                {
-                    var matchedRule = ContinueMatch(infos, index + 1, node);
-                    infos[index].matchedRule = matchedRule;
-                    return matchedRule;
-                }
-            }
-
-            return null;
-        }
     }
 }
