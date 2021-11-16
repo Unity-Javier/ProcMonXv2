@@ -52,13 +52,20 @@ namespace FileActivityAnalyzer
             for (int i = 0; i < extractedLines.Length; ++i)
             {
                 var curLine = extractedLines[i];
-                fileToInfo.TryGetValue(curLine.contents[(int) ProcMonEntry.Path], out var operation);
+                var path = curLine.contents[(int)ProcMonEntry.Path];
+
+                if (!path.StartsWith(@"C:\work\_tests\empty7\", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                fileToInfo.TryGetValue(path, out var operation);
 
                 if (operation == null)
                 {
                     operation = new List<ProcMonOperationInfo>();
-                    fileToInfo.Add(curLine.contents[(int)ProcMonEntry.Path], operation);
+                    fileToInfo.Add(path, operation);
                 }
+
+                float.TryParse(curLine.contents[(int)ProcMonEntry.Duration], out var floatDuration);
 
                 operation.Add(new ProcMonOperationInfo()
                 {
@@ -67,7 +74,7 @@ namespace FileActivityAnalyzer
                     details = new ProcMonOperationDetails()
                     {
                         Time_of_Day = curLine.contents[(int)ProcMonEntry.Time_of_Day],
-                        Duration = curLine.contents[(int)ProcMonEntry.Duration],
+                        Duration = floatDuration,
                         Process_Name = curLine.contents[(int)ProcMonEntry.Process_Name],
                         PID = curLine.contents[(int)ProcMonEntry.PID],
                         Parent_PID = curLine.contents[(int)ProcMonEntry.Parent_PID],
@@ -170,7 +177,7 @@ namespace FileActivityAnalyzer
     public class ProcMonOperationDetails
     {
         public string Time_of_Day;
-        public string Duration;
+        public float Duration;
         public string Process_Name;
         public string PID;
         public string Parent_PID;

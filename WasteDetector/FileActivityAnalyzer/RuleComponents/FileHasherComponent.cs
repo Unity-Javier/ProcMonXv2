@@ -9,6 +9,7 @@ namespace FileActivityAnalyzer.RuleComponents
     public class FileHasherComponent : IRuleComponent
     {
         private Rule m_Rule;
+        private bool[] m_CanBeOptimized;
         public FileHasherComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
@@ -31,6 +32,19 @@ namespace FileActivityAnalyzer.RuleComponents
                     "ReadFile",
                     "CloseFile"
                 }
+            };
+
+            m_CanBeOptimized = new bool[]
+            {
+                false, //"CreateFile",
+                false, //"CreateFile",
+                false, //"QueryNetworkOpenInformationFile",
+                false, //"CloseFile",
+                true, //"CreateFile",
+                true, //"QueryNetworkOpenInformationFile",
+                true, //"CloseFile",
+                false, //"ReadFile",
+                false, //"CloseFile"
             };
 
             m_Rule.opCodes = new int[m_Rule.steps.Length];
@@ -73,12 +87,26 @@ namespace FileActivityAnalyzer.RuleComponents
             {
                 //Match & fill up all the infos so we don't try and match them again
                 infos[index + i].matchedRule = m_Rule;
+                if (CanBeOptimized(i))
+                {
+                    m_Rule.estimatedOptimizationTime += infos[index + i].details.Duration;
+                }
             }
         }
 
         public string GetName()
         {
             return "FileHasher rule";
+        }
+
+        public bool CanBeOptimized(int index)
+        {
+            return m_CanBeOptimized[index];
+        }
+
+        public float GetEstimatedRuleOptimizationTime()
+        {
+            return m_Rule.estimatedOptimizationTime;
         }
     }
 }

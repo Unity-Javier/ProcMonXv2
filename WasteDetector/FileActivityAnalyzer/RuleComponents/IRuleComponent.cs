@@ -9,6 +9,8 @@ namespace FileActivityAnalyzer.RuleComponents
     public interface IRuleComponent
     {
         bool BeginMatch(List<ProcMonOperationInfo> infos);
+        bool CanBeOptimized(int index);
         string GetName();
+        float GetEstimatedRuleOptimizationTime();
     }
 }

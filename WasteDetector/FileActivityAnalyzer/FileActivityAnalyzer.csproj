@@ -49,6 +49,7 @@
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuleComponents\InvalidParameterComponent.cs" />
     <Compile Include="RuleComponents\MoveTempFileToLibraryFolderComponent.cs" />
     <Compile Include="RuleComponents\WriteToFileAndHashOnCloseComponnt.cs" />
     <Compile Include="RuleComponents\CreateFileThenSetAttributesComponent.cs" />

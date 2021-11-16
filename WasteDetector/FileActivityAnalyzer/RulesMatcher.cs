@@ -10,10 +10,13 @@ namespace FileActivityAnalyzer
     public class RulesMatcher
     {
         public Dictionary<string, MatchSummary> m_MatchSummary;
-        
+        public float m_TotalDuration;
+        public float m_EstimatedOptimizationTime;
         public RulesMatcher(Parser parser, List<IRuleComponent> rules)
         {
             m_MatchSummary = new Dictionary<string, MatchSummary>();
+            m_TotalDuration = 0;
+            m_EstimatedOptimizationTime = 0;
 
             var infos = parser.GetOperationInfos();
 
@@ -25,6 +28,23 @@ namespace FileActivityAnalyzer
                 }
 
                 CreateMatchSummaryForPath(curOperationInfo.Key, curOperationInfo.Value);
+                AddToTotalDuration(curOperationInfo.Value);
+            }
+
+            float totalEstimatedOptimizations = 0.0f;
+            for(int i = 0; i < rules.Count; ++i)
+            {
+                totalEstimatedOptimizations += rules[i].GetEstimatedRuleOptimizationTime();
+            }
+
+            Console.WriteLine($"Estimated time saved by optimizations: {totalEstimatedOptimizations}s out of {m_TotalDuration}s");
+        }
+
+        private void AddToTotalDuration(List<ProcMonOperationInfo> value)
+        {
+            foreach(var curValue in value)
+            {
+                m_TotalDuration += curValue.details.Duration;
             }
         }
 

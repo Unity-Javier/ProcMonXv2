@@ -9,6 +9,7 @@ namespace FileActivityAnalyzer.RuleComponents
     public class MoveTempFileToLibraryFolderComponent : IRuleComponent
     {
         private Rule m_Rule;
+        private bool[] m_CanBeOptimized;
         public MoveTempFileToLibraryFolderComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
@@ -27,6 +28,14 @@ namespace FileActivityAnalyzer.RuleComponents
                     "SetRenameInformationFile"
 
                 }
+            };
+
+            m_CanBeOptimized = new bool[]
+            {
+                false,//"CreateFile",
+                false,//"QueryAttributeTagFile",
+                false,//"QueryBasicInformationFile",
+                false//"SetRenameInformationFile"
             };
 
             m_Rule.opCodes = new int[m_Rule.steps.Length];
@@ -69,12 +78,26 @@ namespace FileActivityAnalyzer.RuleComponents
             {
                 //Match & fill up all the infos so we don't try and match them again
                 infos[index + i].matchedRule = m_Rule;
+                if (CanBeOptimized(i))
+                {
+                    m_Rule.estimatedOptimizationTime += infos[index + i].details.Duration;
+                }
             }
         }
 
         public string GetName()
         {
             return "MoveTempFileToLibraryFolderComponent rule";
+        }
+
+        public bool CanBeOptimized(int index)
+        {
+            return m_CanBeOptimized[index];
+        }
+
+        public float GetEstimatedRuleOptimizationTime()
+        {
+            return m_Rule.estimatedOptimizationTime;
         }
     }
 }

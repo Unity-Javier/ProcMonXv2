@@ -12,6 +12,7 @@ namespace FileActivityAnalyzer
         public string ruleName;
         public string[] steps;
         public int[] opCodes;
+        public float estimatedOptimizationTime = 0.0f;
 
         internal void PopulateOpCodes(OpCodes codes)
         {
