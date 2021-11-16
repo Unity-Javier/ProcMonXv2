@@ -49,6 +49,7 @@
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuleComponents\CreateFileThenSetAttributesComponent.cs" />
     <Compile Include="RuleComponents\HasFileChangedComponent.cs" />
     <Compile Include="RuleComponents\FileHasherComponent.cs" />
     <Compile Include="RuleComponents\IRuleComponent.cs" />

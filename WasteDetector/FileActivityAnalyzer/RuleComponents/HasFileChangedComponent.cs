@@ -18,7 +18,7 @@ namespace FileActivityAnalyzer.RuleComponents
         {
             m_Rule = new Rule()
             {
-                ruleName = "HasFileChangedRule rule",
+                ruleName = GetName(),
                 steps = new string[]
                 {
                     "CreateFile",
@@ -71,6 +71,11 @@ namespace FileActivityAnalyzer.RuleComponents
                 //Match & fill up all the infos so we don't try and match them again
                 infos[index + i].matchedRule = m_Rule;
             }
+        }
+
+        public string GetName()
+        {
+            return "HasFileChangedRule rule";
         }
     }
 }

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FileActivityAnalyzer.RuleComponents
 {
-    public class FileHasherComponent : IRuleComponent
+    public class CreateFileThenSetAttributesComponent : IRuleComponent
     {
         private Rule m_Rule;
-        public FileHasherComponent(OpCodes opCodes)
+        public CreateFileThenSetAttributesComponent(OpCodes opCodes)
         {
             InitRule(opCodes);
         }
@@ -22,13 +22,10 @@ namespace FileActivityAnalyzer.RuleComponents
                 steps = new string[]
                 {
                     "CreateFile",
-                    "CreateFile",
-                    "QueryNetworkOpenInformationFile",
+                    "QueryBasicInformationFile",
                     "CloseFile",
                     "CreateFile",
-                    "QueryNetworkOpenInformationFile",
-                    "CloseFile",
-                    "ReadFile",
+                    "SetBasicInformationFile",
                     "CloseFile"
                 }
             };
@@ -78,7 +75,7 @@ namespace FileActivityAnalyzer.RuleComponents
 
         public string GetName()
         {
-            return "FileHasher rule";
+            return "CreateFileThenSetAttributes rule";
         }
     }
 }

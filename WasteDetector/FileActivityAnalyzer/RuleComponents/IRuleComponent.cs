@@ -9,5 +9,6 @@ namespace FileActivityAnalyzer.RuleComponents
     public interface IRuleComponent
     {
         bool BeginMatch(List<ProcMonOperationInfo> infos);
+        string GetName();
     }
 }

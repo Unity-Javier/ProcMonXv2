@@ -16,6 +16,18 @@ namespace FileActivityAnalyzer
             m_Rules = new List<IRuleComponent>();
             m_Rules.Add(new FileHasherComponent(opCodes));
             m_Rules.Add(new HasFileChangedComponent(opCodes));
+            m_Rules.Add(new CreateFileThenSetAttributesComponent(opCodes));
+
+            SanitizeRules();
+        }
+
+        private void SanitizeRules()
+        {
+            var names = new HashSet<string>();
+            for(int i = 0; i < m_Rules.Count; ++i)
+            {
+                names.Add(m_Rules[i].GetName());
+            }
         }
 
         public List<IRuleComponent> GetRuleComponents()
