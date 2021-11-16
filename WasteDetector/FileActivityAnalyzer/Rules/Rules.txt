@@ -9,3 +9,11 @@ CloseFile
 ReadFile
 CloseFile
 =End=
+=HasFileChanged Rule=
+CreateFile
+QueryNetworkOpenInformationFile
+CloseFile
+CreateFile
+QueryNetworkOpenInformationFile
+CloseFile
+=End=

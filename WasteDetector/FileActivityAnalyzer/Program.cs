@@ -45,9 +45,12 @@ namespace FileActivityAnalyzer
             var opCodes = new OpCodes(config);
             var parser = new Parser(config, opCodes);
             var loadRules = new Rules(config, opCodes);
-            var rulesTrie = new RulesTrie(loadRules);
+            //var rulesTrie = new RulesTrie(loadRules);
+            //var rulesMatcher = new RulesMatcher(parser, rulesTrie);
 
-            var rulesMatcher = new RulesMatcher(parser, rulesTrie);
+            var ruleManager = new RuleManager(opCodes);
+            var components = ruleManager.GetRuleComponents();
+            var componentBasedRuleMatcher = new RulesMatcher(parser, components);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileActivityAnalyzer.RuleComponents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace FileActivityAnalyzer
     public class RulesMatcher
     {
         public Dictionary<string, MatchSummary> m_MatchSummary;
+        
         public RulesMatcher(Parser parser, RulesTrie rulesTrie)
         {
             m_MatchSummary = new Dictionary<string, MatchSummary>();
@@ -24,6 +26,23 @@ namespace FileActivityAnalyzer
             }
 
             Console.WriteLine("Complete");
+        }
+
+        public RulesMatcher(Parser parser, List<IRuleComponent> rules)
+        {
+            m_MatchSummary = new Dictionary<string, MatchSummary>();
+
+            var infos = parser.GetOperationInfos();
+
+            foreach (var curOperationInfo in infos)
+            {
+                foreach (var curRule in rules)
+                {
+                    curRule.BeginMatch(curOperationInfo.Value);
+                }
+
+                CreateMatchSummaryForPath(curOperationInfo.Key, curOperationInfo.Value);
+            }
         }
 
         private void CreateMatchSummaryForPath(string key, List<ProcMonOperationInfo> infos)
@@ -65,6 +84,20 @@ namespace FileActivityAnalyzer
                 {
                     var matchedRule = ContinueMatch(infos, i+1, rules[curInfo.opCode]);
                     infos[i].matchedRule = matchedRule;
+
+                    if(matchedRule != null)
+                    {
+                        var duration = 0.0f;
+                        for(int j = 0; j < infos.Count; ++j)
+                        {
+                            if (infos[j].matchedRule != null)
+                            {
+                                float.TryParse(infos[j].details.Duration, out var floatDuration);
+                                duration += floatDuration;
+                            }
+                        }
+                        Console.WriteLine("Duration: " + duration);
+                    }
                 }
             }
         }
