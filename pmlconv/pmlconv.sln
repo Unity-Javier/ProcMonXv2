@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procmonlib", "procmonlib\procmonlib.csproj", "{13968101-3DFC-40BB-ACAD-2D763164D711}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pmlconv", "pmlconv\pmlconv.csproj", "{4B679E70-15BA-4046-A106-313F7186E875}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procmonlibtests", "procmonlibtests\procmonlibtests.csproj", "{6952DC44-5B0C-4007-983C-6C5BE8395BEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13968101-3DFC-40BB-ACAD-2D763164D711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13968101-3DFC-40BB-ACAD-2D763164D711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13968101-3DFC-40BB-ACAD-2D763164D711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13968101-3DFC-40BB-ACAD-2D763164D711}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B679E70-15BA-4046-A106-313F7186E875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B679E70-15BA-4046-A106-313F7186E875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B679E70-15BA-4046-A106-313F7186E875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B679E70-15BA-4046-A106-313F7186E875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6952DC44-5B0C-4007-983C-6C5BE8395BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6952DC44-5B0C-4007-983C-6C5BE8395BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6952DC44-5B0C-4007-983C-6C5BE8395BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6952DC44-5B0C-4007-983C-6C5BE8395BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
