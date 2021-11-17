@@ -5,24 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PmlConversion
+namespace ProcMonUtils
 {
-    public class MonoJitSymbol
+    public class MonoJitSymbol : IAddressRange
     {
-        public ulong BaseAddress;
-        public uint Size;
-        public ulong EndAddress => BaseAddress + Size;
+        public AddressRange Address;
         
         // mono pmip files sometimes have the symbol portion blank
         public string? AssemblyName;
         public string? Symbol;
+        
+        ref AddressRange IAddressRange.AddressRef => ref Address;
     }
 
     public class MonoSymbolReader
     {
         public uint UnityProcessId;
         public DateTime DomainCreationTime; // use for picking the correct set of jit symbols given the event time
-        public MonoJitSymbol[] Symbols; // sorted by address for easy bsearch
+        public MonoJitSymbol[] Symbols; // keep sorted for bsearch
 
         public MonoSymbolReader(string monoPmipPath, DateTime? domainCreationTime = null)
         {
@@ -56,39 +56,25 @@ namespace PmlConversion
                 if (!lmatch.Success)
                     throw new FileLoadException($"Mono pmip file has unexpected format line {iline}", monoPmipPath);
                 
+                var addressBase = ulong.Parse(lmatch.Groups["start"].Value, NumberStyles.HexNumber);
+                var addressSize = (uint)(ulong.Parse(lmatch.Groups["end"].Value, NumberStyles.HexNumber) - addressBase);
+                
                 var monoJitSymbol = new MonoJitSymbol
                 {
-                    BaseAddress = ulong.Parse(lmatch.Groups["start"].Value, NumberStyles.HexNumber),
+                    Address = new AddressRange(addressBase, addressSize),
                     AssemblyName = lmatch.Groups["module"].Value,
-                    Symbol = lmatch.Groups["symbol"].Value.Replace(" (", "("), // remove mono-ism
+                    Symbol = lmatch.Groups["symbol"].Value
+                        .Replace(" (", "(").Replace('/', '.').Replace(':', '.').Replace(",", ", "), // remove mono-isms
                 };
-
-                monoJitSymbol.Size = (uint)(ulong.Parse(lmatch.Groups["end"].Value, NumberStyles.HexNumber) - monoJitSymbol.BaseAddress);
+                
+                // MISSING: handling of a blank assembly+symbol, which *probably* means it's a trampoline
                 
                 entries.Add(monoJitSymbol);            
             }
             
-            Symbols = entries.OrderBy(e => e.BaseAddress).ToArray();
+            Symbols = entries.OrderBy(e => e.Address.Base).ToArray();
         }
         
-        public MonoJitSymbol? FindSymbol(ulong address)
-        {
-            if (address < Symbols[0].BaseAddress || address >= Symbols[^1].EndAddress)
-                return null;
-
-            for (var (l, h) = (0, Symbols.Length - 1); l <= h; )
-            {
-                var i = l + (h - l) / 2;
-                var test = Symbols[i];
-
-                if (test.EndAddress <= address)
-                    l = i + 1;
-                else if (test.BaseAddress > address)
-                    h = i - 1;
-                else
-                    return test;
-            }
-            return null;
-        }
+        public MonoJitSymbol? FindSymbol(ulong address) => Symbols.FindAddressIn(address);
     }
 }

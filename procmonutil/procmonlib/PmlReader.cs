@@ -5,22 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PmlConversion
+namespace ProcMonUtils
 {
     [DebuggerDisplay("{ProcessName}")]
     public class PmlProcess
     {
         public uint ProcessId;
         public string ProcessName;
-        public PmlModule[] Modules;
+        public PmlModule[] Modules; // keep sorted for bsearch
+        
+        public PmlModule? FindModule(ulong address) => Modules.FindAddressIn(address);
     }
 
     [DebuggerDisplay("{ImagePath}")]
-    public class PmlModule
+    public class PmlModule : IAddressRange
     {
         public string ImagePath;
-        public ulong BaseAddress;
-        public uint Size; 
+        public AddressRange Address;
+        
+        ref AddressRange IAddressRange.AddressRef => ref Address;
     }
 
     [DebuggerDisplay("#{EventIndex} ({FrameCount} frames)")]
@@ -40,10 +43,12 @@ namespace PmlConversion
         ulong m_EventOffsetsOffset;
         Dictionary<uint, PmlProcess> m_ProcessesByPmlIndex = new();
         string[] m_Strings;
-        
+
         // see https://github.com/eronnen/procmon-parser/blob/master/docs/PML%20Format.md for reverse-engineered format
 
         public void Dispose() => m_Reader.Dispose();
+
+        public uint EventCount => m_EventCount;
 
         public PmlReader(string pmlPath)
         {
@@ -98,7 +103,8 @@ namespace PmlConversion
             for (var istring = 0; istring < stringDataOffsets.Length; ++istring)
             {
                 SeekBegin(stringsOffset + stringDataOffsets[istring]);
-                m_Strings[istring] = new string(m_Reader.ReadChars((int)m_Reader.ReadUInt32() / 2));
+                var strlen = (int)m_Reader.ReadUInt32() / 2;
+                m_Strings[istring] = new string(m_Reader.ReadChars(strlen), 0, Math.Max(0, strlen - 1)); // drop null-term, except empty string that doesn't include one (don't know why)
             }
         }
         
@@ -111,6 +117,7 @@ namespace PmlConversion
             var processDataOffsets = new uint[processCount];
             for (var iprocess = 0; iprocess < processDataOffsets.Length; ++iprocess)
                 processDataOffsets[iprocess] = m_Reader.ReadUInt32();
+            PmlProcess systemProcess = null;
             for (var iprocess = 0; iprocess < processDataOffsets.Length; ++iprocess)
             {
                 var process = new PmlProcess();
@@ -144,26 +151,38 @@ namespace PmlConversion
                     8); // Unknown
 
                 var moduleCount = m_Reader.ReadUInt32();
-                process.Modules = new PmlModule[moduleCount];
+                var totalModuleCount = moduleCount;
+                if (systemProcess != null)
+                    totalModuleCount += (uint)systemProcess.Modules.Length;
+                process.Modules = new PmlModule[totalModuleCount];
                 for (var imodule = 0; imodule < moduleCount; ++imodule)
                 {
                     SeekCurrent(8); // Unknown
 
                     process.Modules[imodule] = new PmlModule
                     {
-                        BaseAddress = m_Reader.ReadUInt64(), // Base address of the module.
-                        Size = m_Reader.ReadUInt32(), // Size of the module. 
+                        Address = new AddressRange(
+                            m_Reader.ReadUInt64(), // Base address of the module.
+                            m_Reader.ReadUInt32()), // Size of the module. 
                         ImagePath = m_Strings[m_Reader.ReadUInt32()] // image path - as a string index
                     };
-                    
+
                     SeekCurrent(
                         4 + // version of the executable - as a string index
                         4 + // company of the executable - as a string index
                         4 + // description of the executable - as a string index
                         4 + // timestamp of the executable
                         8 * 3); // Unknown
-                    
                 }
+
+                // kernel modules are loaded into every process, and procmon only records them in the System process. just drop them in each process too, and don't care about the duplication. 
+                if (systemProcess != null)
+                    Array.Copy(systemProcess.Modules, 0, process.Modules, moduleCount, systemProcess.Modules.Length);
+                
+                Array.Sort(process.Modules, (a, b) => a.Address.Base.CompareTo(b.Address.Base));
+                
+                if (process.ProcessName == "System")
+                    systemProcess = process;
             }
         }
         
