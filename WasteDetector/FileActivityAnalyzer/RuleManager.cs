@@ -21,6 +21,12 @@ namespace FileActivityAnalyzer
             m_Rules.Add(new MoveTempFileToLibraryFolderComponent(opCodes));
             m_Rules.Add(new InvalidParameterComponent(opCodes));
             m_Rules.Add(new TextRegistryDoubleWriteASMDefComponent(opCodes));
+            m_Rules.Add(new ReadAfterWriteWithNoOtherOperations(opCodes));
+            m_Rules.Add(new NotifyChangeDirectoryComponent(opCodes));
+            m_Rules.Add(new QueryStandardInformationFile(opCodes));
+            m_Rules.Add(new SetEndOfFileInformationFile(opCodes));
+            m_Rules.Add(new SetRenameInformationFile(opCodes));
+            m_Rules.Add(new FlushBuffersFile(opCodes));
 
             SanitizeRules();
         }

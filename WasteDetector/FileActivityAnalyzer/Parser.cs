@@ -54,7 +54,11 @@ namespace FileActivityAnalyzer
                 var curLine = extractedLines[i];
                 var path = curLine.contents[(int)ProcMonEntry.Path];
 
-                if (!path.StartsWith(@"C:\work\_tests\empty7\", StringComparison.OrdinalIgnoreCase))
+                if (!path.StartsWith(@"C:\work\_tests\empty7\", StringComparison.OrdinalIgnoreCase) || string.CompareOrdinal(curLine.contents[(int)ProcMonEntry.Process_Name], "UnityPackageManager.exe") == 0)
+                    continue;
+
+                //Filter out NotifyChangeDirectory 
+                if (string.CompareOrdinal(curLine.contents[(int)ProcMonEntry.Operation], "NotifyChangeDirectory") == 0)
                     continue;
 
                 fileToInfo.TryGetValue(path, out var operation);
